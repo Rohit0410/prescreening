@@ -1,5 +1,5 @@
-# Flask==3.0.3
-protobuf==4.23.4
+#Flask==3.0.3
+protobuf==4.25.3  # Latest stable version compatible with all packages
 google-generativeai==0.4.1
 google-ai-generativelanguage==0.4.0
 python-docx==1.1.2
@@ -8,4 +8,4 @@ nltk==3.9.1
 llama-index==0.10.67.post1
 streamlit==1.42.0
 docx2txt==0.8
-grpcio-tools==1.70.0
+grpcio-tools==1.62.1  # Updated for Python 3.12 support
