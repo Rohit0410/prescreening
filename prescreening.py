@@ -2,7 +2,10 @@ import streamlit as st
 import google.generativeai as genai
 from llama_index.core import SimpleDirectoryReader
 import os
-
+nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('wordnet')
+nltk.download('punkt_tab')
 # Configure API Key
 api_key = "AIzaSyBtO-JpfCUZ8Zz_uLrjY1SavDvSUICvbqY"  # Replace with your actual API key
 genai.configure(api_key=api_key)
