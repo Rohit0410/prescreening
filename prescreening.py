@@ -7,6 +7,7 @@ nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('punkt_tab')
+import requests
 # Configure API Key
 api_key = "AIzaSyBtO-JpfCUZ8Zz_uLrjY1SavDvSUICvbqY"  # Replace with your actual API key
 genai.configure(api_key=api_key)
@@ -57,6 +58,47 @@ def evaluate_responses(jd_text, responses):
     """
     return model.generate_content(evaluation_prompt).text
 
+
+
+def score_resume(jd_content,resume_content):
+    """
+    Sends a request to the JD-CV scoring API to evaluate resumes based on a given job description.
+    
+    Args:
+        jd_url (str): URL of the job description document.
+        jd_content (str): Raw text content of the job description.
+        resumes (str): URL(s) of resumes to be scored.
+        resume_content (str): Raw text content of the resume.
+
+    Returns:
+        dict: JSON response from the API containing the scoring results.
+    """
+    url = "http://api.dev.linkcxo.com/v1/jdcv/score_resumes"
+
+    # Ensure at least one JD input is provided
+    if not jd_content:
+        return {"error": "Either 'jd_file' or 'jd_content' must be provided."}
+
+    # Ensure at least one resume input is provided
+    if not resume_content:
+        return {"error": "Either 'resumes' or 'resume_content' must be provided."}
+    
+    payload = {
+        'jd_file': "",
+        'jd_content': jd_content,
+        'resumes': "",
+        'resume_content': resume_content
+    }
+    
+    try:
+        response = requests.post(url, data=payload)
+        response.raise_for_status()  # Raise error if request fails
+        print(response)
+        return response.json()['resume_1.pdf']
+    except requests.exceptions.RequestException as e:
+        print(f"API request failed: {e}")
+        return None
+
 # Streamlit UI
 st.title("💼 AI Pre-Screening Chatbot")
 
@@ -67,8 +109,11 @@ if jd_file and resume_file:
     with st.spinner("Processing JD & Resume..."):
         jd_details = process_document(jd_file, "JD")
         resume_details = process_document(resume_file, "Resume")
+    final_doc = jd_details+resume_details
+    result = score_resume(jd_details,resume_details)
 
     if jd_details and resume_details:
+        st.subheader(f"""Your profile is {result}% matching with the Job Description""")
         st.subheader("🤖 AI Pre-Screening Interview")
 
         # Initialize session state
@@ -76,7 +121,7 @@ if jd_file and resume_file:
             st.session_state.conversation_history = []
             st.session_state.question_count = 0
             st.session_state.current_question = model.generate_content(
-                f"Based on this JD, ask the first interview question:\n{jd_details}"
+                f"Based on this JD, ask the first interview question:\n{final_doc}"
             ).text
 
         # Display AI's current question
@@ -94,7 +139,7 @@ if jd_file and resume_file:
 
                     # Generate next question if under 5
                     if st.session_state.question_count < 5:
-                        st.session_state.current_question = generate_followup_question(jd_details, user_response)
+                        st.session_state.current_question = generate_followup_question(final_doc, user_response)
                         st.rerun()
 
         else:
