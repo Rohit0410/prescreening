@@ -23,10 +23,10 @@ Functions:
     - process_document(uploaded_file, doc_type)
         Extracts text from an uploaded document (JD or Resume).
 
-    - generate_followup_question(jd_text, user_response)
+    - generate_followup_question(jd_text+resume_text, user_response)
         Generates a follow-up interview question based on the user's response.
 
-    - evaluate_responses(jd_text, responses)
+    - evaluate_responses(jd_text+resume_text, responses)
         Evaluates the candidate's responses, provides a score, and gives feedback.
 
 Session State Variables:
