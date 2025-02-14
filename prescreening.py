@@ -2,6 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 from llama_index.core import SimpleDirectoryReader
 import os
+import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
 nltk.download('wordnet')
